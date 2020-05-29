@@ -55,11 +55,8 @@ export default function resCodes() {
           configurable: true,
           value: function(data, msg) {
             try {
-              res.status(i).json({
-                status: i, 
-                message: codes[i].message+ ": "+ msg || codes[i].message,
-                data: data || ""
-              })
+              res.statusMessage = codes[i].message+ ": "+ msg || codes[i].message
+              res.status(i).json(data || null)
             } catch(err) {
               next(err)
             }
