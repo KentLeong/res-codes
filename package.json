@@ -1,9 +1,9 @@
 {
-  "name": "res-errors",
+  "name": "res-codes",
   "version": "1.0.1",
   "main": "index.js",
   "types": "module",
-  "repository": "https://github.com/KentLeong/res-errors.git",
+  "repository": "https://github.com/KentLeong/res-codes.git",
   "author": "Eric Chu <leongzeno@gmail.com>",
   "license": "MIT"
 }
