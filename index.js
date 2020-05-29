@@ -39,10 +39,6 @@ const codes = {
   507: {
     message: "Insufficient Storage",
     method: "noStorage"
-  },
-  511: {
-    mesage: "Network Authentication Required",
-    method: "authRequired"
   }
 }
 
@@ -55,7 +51,7 @@ export default function resCodes() {
           configurable: true,
           value: function(data, msg) {
             try {
-              res.statusMessage = codes[i].message+ ": "+ msg || codes[i].message
+              res.statusMessage = codes[i].message +" : "+msg || codes[i].message
               res.status(i).json(data || null)
             } catch(err) {
               next(err)
