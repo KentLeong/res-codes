@@ -1,69 +1,85 @@
-const codes = {
-  // 1xx
-  200: {
-    message: "OK",
-    method: "ok"
-  },
-  400: {
-    message: "Bad Request",
-    method: "bad"
-  },
-  401: {
-    message: "Unauthorized",
-    method: "notAuth"
-  },
-  403: {
-    message: "Forbidden",
-    method: "forbidden"
-  },
-  404: {
-    message: "Not Found",
-    method: "notFound"
-  },
-  408: {
-    message: "Request Timeout",
-    method: "timeout"
-  },
-  429: {
-    message: "Too Many Requests",
-    method: "limited"
-  },
-  500: {
-    message: "Internal Server Error",
-    method: "error"
-  },
-  503: {
-    message: "Service Unavailable",
-    method: "noService"
-  },
-  507: {
-    message: "Insufficient Storage",
-    method: "noStorage"
-  }
-}
-
-export default function resCodes() {
-  return (req, res, next) => {
-    function init(cb) {
-      Object.keys(codes).forEach(i => {
-        Object.defineProperty(res, codes[i].method, {
-          enumerable: true,
-          configurable: true,
-          value: function(data, msg) {
-            try {
-              res.statusMessage = codes[i].message +" : "+msg || codes[i].message
-              res.status(i).json(data || null)
-            } catch(err) {
-              next(err)
-            }
-          },
-          writable: true
-        });
-      })
-      cb();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handleError = exports.codes = void 0;
+var chalk_logging_1 = require("chalk-logging");
+var status = {
+    200: {
+        message: "OK",
+        method: "ok"
+    },
+    400: {
+        message: "Bad Request",
+        method: "bad"
+    },
+    401: {
+        message: "Unauthorized",
+        method: "notAuth"
+    },
+    403: {
+        message: "Forbidden",
+        method: "forbidden"
+    },
+    404: {
+        message: "Not Found",
+        method: "notFound"
+    },
+    408: {
+        message: "Request Timeout",
+        method: "timeout"
+    },
+    429: {
+        message: "Too Many Requests",
+        method: "limited"
+    },
+    500: {
+        message: "Internal Server Error",
+        method: "error"
+    },
+    503: {
+        message: "Service Unavailable",
+        method: "noService"
+    },
+    507: {
+        message: "Insufficient Storage",
+        method: "noStorage"
     }
-    init(() => {
-      next();
-    })
-  }
+};
+function codes() {
+    return function (req, res, next) {
+        function init(cb) {
+            Object.keys(status).forEach(function (i) {
+                Object.defineProperty(res, status[i].method, {
+                    enumerable: true,
+                    configurable: true,
+                    value: function (data, msg) {
+                        try {
+                            res.statusMessage = msg;
+                            res.status(i).json(data || null);
+                        }
+                        catch (err) {
+                            next(err);
+                        }
+                    },
+                    writable: true
+                });
+            });
+            cb();
+        }
+        init(function () {
+            next();
+        });
+    };
 }
+exports.codes = codes;
+function handleError(err) {
+    if (!err.response)
+        return;
+    var res = err.resopnse;
+    if (res.status >= 400 && res.status < 500) {
+        chalk_logging_1.log.warning(res.statusMessage);
+    }
+    else if (res.status >= 500) {
+        chalk_logging_1.log.error(res.statusMessage);
+    }
+}
+exports.handleError = handleError;
