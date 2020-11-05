@@ -1,6 +1,6 @@
 import { log } from "chalk-logging";
 
-const status = {
+const status: any = {
   200: {
     message: "OK",
     method: "ok"
@@ -43,16 +43,16 @@ const status = {
   }
 }
 
-export function codes() {
-  return (req, res, next) => {
-    function init(cb) {
+export function codes(): any {
+  return (req: any, res: any, next: any) => {
+    function init(cb:any) {
       Object.keys(status).forEach(i => {
         Object.defineProperty(res, status[i].method, {
           enumerable: true,
           configurable: true,
-          value: function(data, msg) {
+          value: function(data: any, msg: string) {
             try {
-              res.statusMessage = msg;
+              res.statusText = msg;
               res.status(i).json(data || null)
             } catch(err) {
               next(err)
@@ -61,6 +61,18 @@ export function codes() {
           writable: true
         });
       })
+      if (req.query) {
+        var query = "";
+        for (let q in req.query) {
+          query += `${q}: ${req.query[q]}`;
+        }
+        var query = query.slice(0, -1);
+        Object.defineProperty(req, "stringQ", {
+          enumerable: true,
+          configurable: true,
+          value: query
+        })
+      }
       cb();
     }
     init(() => {
@@ -69,12 +81,12 @@ export function codes() {
   }
 }
 
-export function handleError(err: any) {
-  if (!err.response) return;
-  let res = err.resopnse;
-  if (res.status >= 400 && res.status < 500) {
-    log.warning(res.statusMessage);
+export function handleError(err: any): void {
+  var res = err.response;
+  if (!res) return;
+  if (res.status && res.status >= 400 && res.status < 500) {
+    log.warning(res.statusText);
   } else if (res.status >= 500) {
-    log.error(res.statusMessage);
+    log.error(res.statusText);
   }
 }

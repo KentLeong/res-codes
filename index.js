@@ -53,7 +53,7 @@ function codes() {
                     configurable: true,
                     value: function (data, msg) {
                         try {
-                            res.statusMessage = msg;
+                            res.statusText = msg;
                             res.status(i).json(data || null);
                         }
                         catch (err) {
@@ -63,6 +63,18 @@ function codes() {
                     writable: true
                 });
             });
+            if (req.query) {
+                var query = "";
+                for (var q in req.query) {
+                    query += q + ": " + req.query[q];
+                }
+                var query = query.slice(0, -1);
+                Object.defineProperty(req, "stringQ", {
+                    enumerable: true,
+                    configurable: true,
+                    value: query
+                });
+            }
             cb();
         }
         init(function () {
@@ -72,14 +84,14 @@ function codes() {
 }
 exports.codes = codes;
 function handleError(err) {
-    if (!err.response)
+    var res = err.response;
+    if (!res)
         return;
-    var res = err.resopnse;
-    if (res.status >= 400 && res.status < 500) {
-        chalk_logging_1.log.warning(res.statusMessage);
+    if (res.status && res.status >= 400 && res.status < 500) {
+        chalk_logging_1.log.warning(res.statusText);
     }
     else if (res.status >= 500) {
-        chalk_logging_1.log.error(res.statusMessage);
+        chalk_logging_1.log.error(res.statusText);
     }
 }
 exports.handleError = handleError;
